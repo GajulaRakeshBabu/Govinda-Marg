@@ -1,0 +1,436 @@
+/* styles.css - Accessibility and basic styling */
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 1.5rem; /* Large font for readability */
+  background-color: #f9f9f9;
+  color: #333;
+  margin: 0;
+  padding: 1rem;
+}
+
+h1, h2, h3 {
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+button, select, input[type="submit"] {
+  font-size: 1.5rem;
+  padding: 1rem 2rem;
+  margin: 0.5rem 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  width: 100%;
+  max-width: 400px;
+}
+
+button:disabled, input[type="submit"]:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+label {
+  font-size: 1.5rem;
+  display: block;
+  margin-top: 1rem;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.message {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  color: green;
+}
+
+.error {
+  color: red;
+}
+
+.large-text {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.lang-toggle {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.lang-toggle button {
+  width: auto;
+  margin-right: 1rem;
+  background-color: #28a745;
+}
+
+.lang-toggle button.active {
+  background-color: #155724;
+}
+
+/* New styles for number of tickets input and button layout */
+#numTickets {
+  font-size: 2rem !important;
+  width: 100px !important;
+  display: block;
+  margin: 1rem 0 1rem 0;
+  text-align: left;
+}
+
+#bookingForm input[type="submit"] {
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 400px;
+  display: block;
+  text-align: center;
+  padding-left: auto;
+  padding-right: auto;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  body {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+  }
+
+  .container {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  h1, h2, h3 {
+    font-size: 1.5rem;
+  }
+
+  button, select, input[type="submit"] {
+    font-size: 1.2rem;
+    padding: 0.75rem 1.5rem;
+    max-width: 100%;
+  }
+
+  label {
+    font-size: 1.2rem;
+  }
+
+  .message, .error {
+    font-size: 1.2rem;
+  }
+}
+
+/* Background image for staffindex.html */
+body.staffindex {
+  background-image: url('images/adminback.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+/* Cool animated background for admin.html */
+body.admin {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
+  background-size: 1400% 1400%;
+  animation: rainbowBackground 20s ease infinite;
+  color: #fff;
+}
+
+.bubbles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bubbles span {
+  position: absolute;
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  bottom: -50px;
+  border-radius: 50%;
+  animation: rise linear infinite;
+  left: calc(100vw * var(--i) / 30);
+  animation-duration: calc(5s + var(--i) * 0.5s);
+  filter: blur(1px);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+@keyframes rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-110vh) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes rainbowBackground {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* Additional animated background overlay */
+body.admin::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: none;
+  opacity: 0;
+  animation: none;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes coolBackgroundAnimation {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+@keyframes floatAnimation {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(20px); }
+}
+
+/* Container and content should be above overlay */
+body.admin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  color: #fff;
+}
+
+.container {
+  position: relative;
+  margin: auto;
+  max-width: 600px;
+  padding: 2rem 3rem;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+  font-family: 'Cinzel', serif;
+  color: #5a3e1b;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 1;
+}
+
+/* Animated buttons */
+.animated-button {
+  border: none;
+  background: linear-gradient(45deg, #d4af37, #b8860b);
+  color: white;
+  box-shadow: 0 4px 8px rgba(184, 134, 11, 0.6);
+  transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.animated-button:hover, .animated-button:focus {
+  background: linear-gradient(45deg, #ffd700, #daa520);
+  box-shadow: 0 6px 12px rgba(255, 215, 0, 0.8);
+  transform: scale(1.05);
+  outline: none;
+}
+
+/* Stats container */
+.stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin: 1rem 0;
+  gap: 1.5rem;
+}
+
+.stat-item {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 1rem 2rem;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(184, 134, 11, 0.5);
+  flex: 1 1 250px;
+  color: #5a3e1b;
+  font-family: 'Cinzel', serif;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-10px);
+}
+
+/* Animated numbers */
+.stat-number {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #b8860b;
+  text-shadow: 1px 1px 2px #6b4f1d;
+  margin-top: 0.5rem;
+}
+
+/* Animated list */
+.animated-list {
+  list-style-type: none;
+  padding-left: 0;
+  font-size: 1.2rem;
+  color: #5a3e1b;
+  max-height: 150px;
+  overflow-y: scroll;
+  border: 1px solid #b8860b;
+  border-radius: 12px;
+  background: #fff8dc;
+  box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+              inset -2px -2px 5px rgba(184, 134, 11, 0.3);
+}
+
+/* Scrollbar styling */
+.animated-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.animated-list::-webkit-scrollbar-thumb {
+  background: #b8860b;
+  border-radius: 4px;
+}
+
+/* Circular progress bar */
+.circular-chart {
+  display: block;
+  margin: 0 auto;
+  max-width: 120px;
+  max-height: 120px;
+  transform: rotate(-90deg);
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 3.8;
+  stroke-linecap: round;
+  stroke: #b8860b;
+  stroke-dasharray: 0, 100;
+  transition: stroke-dasharray 1.5s ease;
+}
+
+.percentage {
+  fill: #b8860b;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  text-anchor: middle;
+  dominant-baseline: central;
+  transform: rotate(90deg);
+  user-select: none;
+}
+
+/* Added temple-themed animated background and enhanced styles */
+
+/* @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap'); */
+
+/* body {
+  background: linear-gradient(270deg, #f0e6d2, #d9cba3, #f0e6d2);
+  background-size: 600% 600%;
+  animation: backgroundAnimation 20s ease infinite;
+  overflow-x: hidden;
+  color: #333;
+} */
+
+/* @keyframes backgroundAnimation {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+} */
+
+.overlay {
+  background: rgba(0, 0, 0, 0.6);
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 2rem 3rem;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+  font-family: 'Cinzel', serif;
+  color: #5a3e1b;
+  text-align: center;
+}
+
+h1, h2, h3 {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  color: #b8860b;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 2px #6b4f1d;
+  transition: color 0.3s ease;
+}
+
+h1:hover {
+  color: #ffd700;
+}
+
+button, select, input[type="submit"] {
+  border: none;
+  background: linear-gradient(45deg, #d4af37, #b8860b);
+  color: white;
+  box-shadow: 0 4px 8px rgba(184, 134, 11, 0.6);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+  border-radius: 12px;
+}
+
+button:hover, input[type="submit"]:hover {
+  background: linear-gradient(45deg, #ffd700, #daa520);
+  box-shadow: 0 6px 12px rgba(255, 215, 0, 0.8);
+}
+
+#numTickets {
+  border: 2px solid #b8860b;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+  font-weight: 600;
+  font-size: 2rem !important;
+  width: auto !important;
+  min-width: 80px;
+  max-width: 140px;
+  background: linear-gradient(135deg, #fff8dc, #f0e6d2);
+  box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+              inset -2px -2px 5px rgba(184, 134, 11, 0.3);
+  cursor: pointer;
+}
+
+#numTickets:focus {
+  border-color: #ffd700;
+  outline: none;
+}
+.up{
+  text-transform: uppercase;
+
+}
