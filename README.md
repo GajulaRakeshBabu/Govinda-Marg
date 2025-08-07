@@ -1,6 +1,7 @@
 # 🚌 Govindha Marg - Devotee Bus Ticketing System
 
 <div align="center">
+
   
 ![Project Banner](https://img.shields.io/badge/Devotee-Bus%20Ticketing-blue?style=for-the-badge&logo=bus&color=FF6B35)
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
@@ -8,6 +9,7 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
 
 ### 🌟 **Seamless Bus Ticketing for Tirumala & Tirupati Devotees** 🌟
+
 
 </div>
 
@@ -187,3 +189,4 @@ This project is open-source and available under the **MIT License**.
 **[⬆ Back to Top](#-govindha-marg---devotee-bus-ticketing-system)**
 
 </div>
+
