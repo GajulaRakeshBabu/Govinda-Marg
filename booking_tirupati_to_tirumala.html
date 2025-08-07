@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book Ticket: Tirupati to Tirumala</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet" />
+  <script src="common.js"></script>
+</head>
+<body>
+  <div >
+    <div class="container" role="main">
+    <h1>Book Ticket: </h1>
+    <h1>Tirupati → Tirumala</h1>
+    <form id="bookingForm" aria-label="Ticket Booking Form">
+      <!-- Ticket Type fixed to One-Way, no dropdown -->
+      <input type="hidden" id="ticketType" name="ticketType" value="one-way" />
+      <label for="numTickets">Number of Tickets:</label>
+      <input type="number" id="numTickets" name="numTickets" min="1" max="10" value="1" required aria-required="true" />
+      <input type="submit" value="Book Ticket" />
+    </form>
+    <p id="message" class="message" aria-live="polite"></p>
+    <p id="timeLimitMessage" class="error" aria-live="polite"></p>
+  </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const bookingForm = document.getElementById('bookingForm');
+      const messageEl = document.getElementById('message');
+
+      bookingForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const ticketType = bookingForm.ticketType.value;
+        const numTickets = parseInt(bookingForm.numTickets.value, 10);
+        if (isNaN(numTickets) || numTickets < 1 || numTickets > 10) {
+          messageEl.textContent = "Please enter a valid number of tickets (1-10).";
+          speak(messageEl.textContent);
+          return;
+        }
+        const timestamp = getCurrentTimestamp();
+        const maxScans = ticketType === 'one-way' ? 1 : 2;
+
+        try {
+          const ids = [];
+          for (let i = 0; i < numTickets; i++) {
+            const ticket = {
+              route: "Tirupati → Tirumala",
+              type: ticketType,
+              timestamp: timestamp,
+              scansUsed: 0,
+              maxScans: maxScans
+            };
+            const id = addTicket(ticket);
+            ids.push(id);
+          }
+
+          messageEl.textContent = `${numTickets} ticket(s) booked successfully!`;
+          speak(messageEl.textContent);
+
+        // Retrieve logged-in username
+        const loggedInUserJson = sessionStorage.getItem('loggedInUser');
+        let mobileNumber = null;
+        if (loggedInUserJson) {
+          try {
+            const username = JSON.parse(loggedInUserJson).username;
+            const userProfileJson = localStorage.getItem(`userProfile_${username}`);
+            if (userProfileJson) {
+              const userProfile = JSON.parse(userProfileJson);
+              mobileNumber = userProfile.mobile || null;
+            }
+          } catch (e) {
+            console.error('Error retrieving user profile:', e);
+          }
+        }
+
+        // Compose ticket details message
+        const ticketDetailsMessage = `Booked ${numTickets} ticket(s) for route: Tirupati → Tirumala, Type: ${ticketType}, Timestamp: ${timestamp}`;
+
+        if (mobileNumber) {
+          alert(`Ticket details sent to mobile number: ${mobileNumber}\n\n${ticketDetailsMessage}`);
+        } else {
+          alert(`Ticket details:\n\n${ticketDetailsMessage}\n\n(Note: Mobile number not found in profile)`);
+        }
+
+        // Redirect to QR multiple generation page with ticket ids
+        window.location.href = `qr_multiple.html?ids=${ids.join(',')}`;
+      } catch (error) {
+        messageEl.textContent = "Error booking ticket: " + error.message;
+        speak("Error booking ticket");
+      }
+      });
+    });
+  </script>
+</body>
+</html>
