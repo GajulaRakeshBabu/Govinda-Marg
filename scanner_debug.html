@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QR Code Scanner - Debug Version</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="common.js"></script>
+  <style>
+    .debug-info {
+      background: #f0f0f0;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    .camera-status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    .camera-allowed { background: #d4edda; color: #155724; }
+    .camera-denied { background: #f8d7da; color: #721c24; }
+    .camera-unknown { background: #fff3cd; color: #856404; }
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <h1>QR Code Scanner - Debug Mode</h1>
+    
+    <div id="debugInfo" class="debug-info">
+      <h3>Debug Information:</h3>
+      <div id="cameraStatus">Checking camera permissions...</div>
+      <div id="userStatus">Checking user login...</div>
+      <div id="ticketStatus">Checking ticket storage...</div>
+    </div>
+
+    <div id="reader" style="width: 100%; max-width: 600px;"></div>
+    <p id="statusMessage" class="message" aria-live="polite"></p>
+
+    <div id="manualInputContainer" style="margin-top: 1rem;">
+      <label for="manualTicketId">Enter Ticket ID manually:</label>
+      <input type="text" id="manualTicketId" aria-label="Manual Ticket ID input" />
+      <button id="manualSubmitBtn">Submit</button>
+    </div>
+
+    <div id="testControls" style="margin-top: 1rem;">
+      <h3>Test Controls:</h3>
+      <button onclick="testCamera()">Test Camera</button>
+      <button onclick="testQRFormat()">Test QR Format</button>
+      <button onclick="clearScanHistory()">Clear Scan History</button>
+      <button onclick="showAllTickets()">Show All Tickets</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const statusMessage = document.getElementById('statusMessage');
+      const manualInputContainer = document.getElementById('manualInputContainer');
+      const manualTicketIdInput = document.getElementById('manualTicketId');
+      const manualSubmitBtn = document.getElementById('manualSubmitBtn');
+      const debugInfo = document.getElementById('debugInfo');
+      const cameraStatus = document.getElementById('cameraStatus');
+      const userStatus = document.getElementById('userStatus');
+      const ticketStatus = document.getElementById('ticketStatus');
+
+      // Map to track last scan time per ticket ID
+      const lastScanTimes = {};
+
+      function updateStatus(message, isError = false) {
+        statusMessage.textContent = message;
+        statusMessage.className = isError ? 'error' : 'message';
+        speak(message);
+        console.log('Status:', message);
+      }
+
+      function updateDebugInfo() {
+        // Check user login status
+        const loggedInUser = sessionStorage.getItem('loggedInUser');
+        if (loggedInUser) {
+          try {
+            const user = JSON.parse(loggedInUser);
+            userStatus.innerHTML = `<strong>User:</strong> ${user.username} (Logged in)`;
+          } catch {
+            userStatus.innerHTML = '<strong>User:</strong> Invalid login data';
+          }
+        } else {
+          userStatus.innerHTML = '<strong>User:</strong> Not logged in';
+        }
+
+        // Check ticket storage
+        const allTickets = getAllTicketsForAllUsers();
+        ticketStatus.innerHTML = `<strong>Total Tickets:</strong> ${allTickets.length}`;
+        
+        // Show sample tickets
+        if (allTickets.length > 0) {
+          ticketStatus.innerHTML += '<br><strong>Sample IDs:</strong> ' + 
+            allTickets.slice(0, 3).map(t => t.id).join(', ');
+        }
+      }
+
+      function isUserLoggedIn() {
+        const loggedInUser = sessionStorage.getItem('loggedInUser');
+        if (!loggedInUser) return false;
+        try {
+          const user = JSON.parse(loggedInUser);
+          return !!user.username;
+        } catch {
+          return false;
+        }
+      }
+
+      function processTicketId(ticketId) {
+        console.log('Processing ticket ID:', ticketId);
+        
+        if (!isUserLoggedIn()) {
+          updateStatus("User not logged in. Please login to scan tickets.", true);
+          return;
+        }
+
+        const now = Date.now();
+        const lastScanTime = lastScanTimes[ticketId] || 0;
+        const cooldown = 30 * 1000; // 30 seconds cooldown
+
+        if (now - lastScanTime < cooldown) {
+          updateStatus("✅ Valid ticket. Scanned Successfully.", true);
+          setTimeout(() => {
+            window.location.href = 'staffindex.html';
+          }, 3000);
+          return;
+        }
+
+        lastScanTimes[ticketId] = now;
+
+        const ticket = getTicketById(ticketId);
+        console.log('Scanned ticket ID:', ticketId, 'Lookup result:', ticket);
+
+        if (!ticket) {
+          updateStatus(`Ticket not found: ${ticketId}`, true);
+          return;
+        }
+
+        if (ticket.scansUsed < ticket.maxScans) {
+          const updated = updateTicketScansUsed(ticketId, ticket.scansUsed + 1);
+          if (updated) {
+            updateStatus(`✅ Valid ticket. Scan count updated. Used: ${ticket.scansUsed + 1}/${ticket.maxScans}`);
+          } else {
+            updateStatus("Error updating scan count.", true);
+          }
+        } else {
+          updateStatus(`❌ Invalid / Already Used ticket. Used: ${ticket.scansUsed}/${ticket.maxScans}`, true);
+        }
+      }
+
+      function onScanSuccess(decodedText, decodedResult) {
+        console.log('Raw QR Code scanned:', decodedText);
+        updateStatus(`Scanned: ${decodedText}`);
+        
+        // Try to parse as JSON first
+        try {
+          const data = JSON.parse(decodedText);
+          if (data.id) {
+            processTicketId(data.id);
+          } else {
+            // If JSON but no id field, try using the text directly
+            console.log('JSON format but no id field, trying as plain text');
+            processTicketId(decodedText);
+          }
+        } catch (e) {
+          // If not JSON, treat as plain ticket ID
+          console.log('Not JSON format, treating as plain ticket ID');
+          processTicketId(decodedText);
+        }
+      }
+
+      function onScanFailure(error) {
+        // Only show error if it's not just "QR code not found"
+        if (!error.includes('QR code not found')) {
+          console.log('Scan failure:', error);
+        }
+      }
+
+      // Test functions
+      window.testCamera = function() {
+        Html5QrCode.getCameras().then(cameras => {
+          if (cameras && cameras.length) {
+            cameraStatus.innerHTML = '<strong>Camera:</strong> Available - ' + cameras.length + ' camera(s) found';
+            cameraStatus.className = 'camera-status camera-allowed';
+            console.log('Available cameras:', cameras);
+          } else {
+            cameraStatus.innerHTML = '<strong>Camera:</strong> No cameras found';
+            cameraStatus.className = 'camera-status camera-denied';
+          }
+        }).catch(err => {
+          cameraStatus.innerHTML = '<strong>Camera:</strong> Error - ' + err;
+          cameraStatus.className = 'camera-status camera-denied';
+        });
+      };
+
+      window.testQRFormat = function() {
+        const testFormats = [
+          '{"id": "_abc123"}',
+          '_abc123',
+          'test123',
+          '{"ticketId": "_test456"}'
+        ];
+        
+        console.log('Testing QR formats:', testFormats);
+        testFormats.forEach(format => {
+          console.log(`Testing format: ${format}`);
+          try {
+            const data = JSON.parse(format);
+            console.log('Parsed JSON:', data);
+            if (data.id) {
+              console.log('Valid format with id:', data.id);
+            }
+          } catch (e) {
+            console.log('Plain text format:', format);
+          }
+        });
+      };
+
+      window.clearScanHistory = function() {
+        lastScanTimes = {};
+        updateStatus('Scan history cleared');
+      };
+
+      window.showAllTickets = function() {
+        const allTickets = getAllTicketsForAllUsers();
+        console.log('All tickets:', allTickets);
+        alert(`Total tickets: ${allTickets.length}\n\n${allTickets.map(t => `${t.id}: ${t.type} (${t.scansUsed}/${t.maxScans})`).join('\n')}`);
+      };
+
+      manualSubmitBtn.addEventListener('click', () => {
+        const manualId = manualTicketIdInput.value.trim();
+        if (manualId) {
+          processTicketId(manualId);
+        } else {
+          updateStatus("Please enter a valid ticket ID.", true);
+        }
+      });
+
+      // Initialize
+      updateDebugInfo();
+      testCamera();
+
+      if (!isUserLoggedIn()) {
+        updateStatus("User not logged in. Please login to scan tickets.", true);
+      }
+
+      // Start scanner with enhanced error handling
+      const html5QrCode = new Html5Qrcode("reader");
+      
+      const config = {
+        fps: 10,
+        qrbox: 250,
+        aspectRatio: 1.0,
+        disableFlip: false
+      };
+
+      Html5QrCode.getCameras().then(cameras => {
+        if (cameras && cameras.length) {
+          console.log('Starting camera with config:', config);
+          html5QrCode.start(
+            { facingMode: "environment" },
+            config,
+            onScanSuccess,
+            onScanFailure
+          ).catch(err => {
+            console.error('Camera start error:', err);
+            updateStatus("Unable to start camera: " + err, true);
+          });
+        } else {
+          updateStatus("No camera found on this device.", true);
+        }
+      }).catch(err => {
+        console.error('Camera detection error:', err);
+        updateStatus("Error getting cameras: " + err, true);
+      });
+    });
+  </script>
+</body>
+</html>
