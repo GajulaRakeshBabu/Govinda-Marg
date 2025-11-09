@@ -1,7 +1,7 @@
 # 🚌 Govindha Marg - Devotee Bus Ticketing System
+![govinda marg](https://github.com/user-attachments/assets/d3a56871-98a4-4cf1-9a40-7107094b368f)
 
 <div align="center">
-
   
 ![Project Banner](https://img.shields.io/badge/Devotee-Bus%20Ticketing-blue?style=for-the-badge&logo=bus&color=FF6B35)
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
@@ -13,14 +13,6 @@
 
 </div>
 
-## 📋 Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Usage](#usage)
-- [Contributing](#contributing)
 
 ## 🎯 Overview
 
@@ -134,22 +126,6 @@ govindha-marg/
 3. **Scan Tickets** - Use `scanner.html` for QR validation
 4. **Manage Bookings** - View and manage all bookings
 
-### For Developers
-```javascript
-// User authentication flow
-// Data stored in localStorage: 'users', 'bookings'
-// Session management via sessionStorage: 'loggedInUser'
-
-// Example: Check current user
-const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
-if (currentUser && currentUser.role === 'staff') {
-    // Redirect to staff dashboard
-    window.location.href = 'staffindex.html';
-}
-```
-
-## 🔧 Development Notes
-
 ### Data Storage
 - **Users**: Stored in `localStorage.users` as JSON array
 - **Bookings**: Stored in `localStorage.bookings` as JSON array
@@ -160,12 +136,6 @@ if (currentUser && currentUser.role === 'staff') {
 - `main.js` - Core booking and user management logic
 - `styles.css` - Consistent styling across all pages
 - `scanner.html` - QR code scanning functionality
-
-### Browser Compatibility
-- ✅ Chrome 60+
-- ✅ Firefox 55+
-- ✅ Safari 12+
-- ✅ Edge 79+
 
 ## 🤝 Contributing
 
@@ -184,9 +154,10 @@ This project is open-source and available under the **MIT License**.
 
 <div align="center">
 
-### 🙏 **Jai Govindha! Experience Divine Journey with Govindha Marg** 🙏
+### 🙏 **Govindha Govindha! Experience Divine Journey with Govindha Marg** 🙏
 
 **[⬆ Back to Top](#-govindha-marg---devotee-bus-ticketing-system)**
 
 </div>
+
 
